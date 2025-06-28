@@ -1,0 +1,4 @@
+variables.auto.pkrvars.hcl
+output/
+**/http/*
+!packer/http/README.md
