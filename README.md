@@ -13,12 +13,19 @@ What's preinstalled:
 
 
 ## Prerequisites
-- Ensure that Packer, Terraform, and QEMU are installed.
+- Ensure that Packer, Terraform, QEMU, and libvirt are installed.
 - Create a copy of `variables.pkrvars.hcl` and rename it to `variables.auto.pkrvars.hcl`
 
 todo: write the rest of this
 
 ## Building the VM Image
+```sh
+cd packer
+packer validate .
+packer build .
+```
+
+You can connect to the VM via VNC to view progress
 
 ## Deploying the VM with Terraform
 
@@ -32,16 +39,16 @@ To install normally (without autoinstall), skip steps 2, 3, and set `extra-args`
 1. Mount your iso to the filesystem
 ```sh
 mkdir /mnt/youriso
-sudo mount -o loop /path/to/your.iso /mnt/yourisoMounted
+sudo mount -o loop /path/to/your.iso /mnt/youriso
 ```
-2. Create `user-data` and `meta-data`.\
+2. Create `user-data` and `meta-data`\
 You can use [cloud-init.yaml](packer/scripts/cloud-init.yaml) for as a base for `user-data` and keep `meta-data` empty.
 ```sh
 cp ./packer/scripts/cloud-init.yaml ./packer/http/user-data
 touch ./packer/http/meta-data
 ```
 
-3. Serve `user-data` over http.
+3. Serve the http folder
 ```sh
 cd ./packer/http
 npx http-server --listen 0.0.0.0 # Or use any other http server you like
