@@ -1,0 +1,24 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ${hostname}
+    username: ${username}
+    password: ${hashed_password}
+  locale: en_us
+  keyboard:
+    layout: us
+  ssh:
+    install-server: yes
+    allow-pw: no
+    authorized-keys:
+    %{ for key in ssh_keys ~}
+      - ${key}
+    %{ endfor ~}
+  # Add packer's SSH key from the kernel commandline args
+  late-commands:
+    - mkdir -p /target/etc/ssh/sshd_config.d
+    - echo "PermitRootLogin prohibit-password" > /target/etc/ssh/sshd_config.d/permitroot.conf
+    - mkdir -p -m 700 /target/root/.ssh
+    - 'grep -oP "PACKER_SSH_KEY\=\K\S+(?=%0A)" /proc/cmdline | sed "s@+@ @g;s@%@\\\x@g" | xargs -0 printf "%b" >> /target/root/.ssh/authorized_keys'
+    - chmod 600 /target/root/.ssh/authorized_keys
